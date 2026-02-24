@@ -68,7 +68,7 @@ function safeResolveUrlPath(urlPath) {
   return fsPath;
 }
 
-async function startStaticServer(host, port) {
+async function startStaticServer(host, requestedPort) {
   const server = http.createServer(async (req, res) => {
     try {
       const fsPath = safeResolveUrlPath(req.url || '/');
@@ -77,14 +77,12 @@ async function startStaticServer(host, port) {
         res.end('Bad request');
         return;
       }
-
       const stat = await fs.stat(fsPath).catch(() => null);
       if (!stat || !stat.isFile()) {
         res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
         res.end('Not found');
         return;
       }
-
       const data = await fs.readFile(fsPath);
       res.writeHead(200, { 'content-type': contentType(fsPath) });
       res.end(data);
@@ -93,9 +91,11 @@ async function startStaticServer(host, port) {
       res.end(String(err?.message ?? err));
     }
   });
-
-  await new Promise((resolve) => server.listen(port, host, resolve));
-  return server;
+  await new Promise((resolve) => server.listen(requestedPort, host, resolve));
+  const addr = server.address();
+  const actualPort = typeof addr === 'object' && addr ? addr.port : requestedPort;
+  const baseUrl = `http://${host}:${actualPort}/`;
+  return { server, baseUrl, actualPort };
 }
 
 async function ensureDir(dirPath) {
@@ -126,14 +126,10 @@ async function renderSinglePdf(browser, baseUrl, pagePath, outPath) {
     viewport: { width: 794, height: 1123 },
     deviceScaleFactor: 1,
   });
-
   await page.emulateMedia({ media: 'print' });
-
   const url = new URL(pagePath, baseUrl).toString();
   await page.goto(url, { waitUntil: 'networkidle' });
-
   await page.waitForFunction(() => window.__PAGE_READY__ === true, null, { timeout: 20000 });
-
   await page.pdf({
     path: outPath,
     format: 'A4',
@@ -141,54 +137,44 @@ async function renderSinglePdf(browser, baseUrl, pagePath, outPath) {
     preferCSSPageSize: true,
     margin: { top: '0', right: '0', bottom: '0', left: '0' },
   });
-
   await page.close();
 }
 
 async function mergePdfs(pdfPaths, outFile) {
   const merged = await PDFDocument.create();
-
   for (const p of pdfPaths) {
     const bytes = await fs.readFile(p);
     const doc = await PDFDocument.load(bytes);
     const copiedPages = await merged.copyPages(doc, doc.getPageIndices());
     for (const page of copiedPages) merged.addPage(page);
   }
-
   const outBytes = await merged.save();
   await fs.writeFile(outFile, outBytes);
 }
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-
   const bookIndex = await readRulesBookIndex();
   const pages = flattenPages(bookIndex, args.topic);
-
   if (args.topic && pages.length === 0) {
     usageAndExit(`No pages found for topic: ${args.topic}`);
   }
   if (!args.topic && pages.length === 0) {
     usageAndExit('No pages found in book index');
   }
-
   const host = '127.0.0.1';
-  const port = 4173;
-  const baseUrl = `http://${host}:${port}/`;
-
-  const server = await startStaticServer(host, port);
-
+  // Dynamic port: respect process.env.PORT if set, otherwise use 0 (OS-assigned)
+  // This prevents EADDRINUSE conflicts when preview/watch is already running on 4173
+  const requestedPort = process.env.PORT ? Number(process.env.PORT) : 0;
+  const { server, baseUrl } = await startStaticServer(host, requestedPort);
   const outDir = path.join(repoRoot, 'dist', 'pdf');
   await ensureDir(outDir);
-
   const outFile = args.outFile
     ? path.resolve(repoRoot, args.outFile)
     : path.join(outDir, args.topic ? `topic-${args.topic}.pdf` : 'book.pdf');
-
   const browser = await chromium.launch({
     headless: true,
   });
-
   const tmpPaths = [];
   try {
     for (const p of pages) {
@@ -197,7 +183,6 @@ async function main() {
       await renderSinglePdf(browser, baseUrl, p.path, tmpPdf);
       tmpPaths.push(tmpPdf);
     }
-
     await mergePdfs(tmpPaths, outFile);
     console.log(outFile);
   } finally {
