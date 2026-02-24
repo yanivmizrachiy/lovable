@@ -33,7 +33,7 @@
 - `npm run bootstrap`: כניסה אחת שמריצה setup → qa, ומעדכנת RULES.md.
 - `npm run preview`: שרת מקומי שמדפיס URL + הוראות עצירה, ורושם Run Log. (ללא עדכון אוטומטי)
 - `npm run watch`: תצוגה מקדימה קבועה עם עדכון אוטומטי: Watch על שינויים → QA → רענון תצוגה דרך SSE (best effort). רענון נשלח רק אחרי QA PASS; אם QA נכשל אין רענון.
-- `npm run qa`: בדיקות חוסמות.
+- `npm run qa`: בדיקות חוסמות + בדיקות עקביות ל-RULES.md (בלוקים יחידים, Book Index תקין שמצביע לקבצים קיימים, הפניה ל-PROMPT.txt, ואכיפת Light theme ב-VS Code).
 - `npm run pdf`: הפקת PDF לפי אינדקס הספר.
 - `npm run lint`: ESLint + Stylelint + Prettier check.
 
@@ -202,6 +202,6 @@
 
 ## QA Status
 - Status: PASS
-- Timestamp: 2026-02-24T20:28:49.423Z
+- Timestamp: 2026-02-24T20:41:20.306Z
 - Failures:
 (none)

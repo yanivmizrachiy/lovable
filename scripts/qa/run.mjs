@@ -201,12 +201,92 @@ async function checkVsCodeSettings(failures) {
   const raw = await fs.readFile(p, 'utf8');
   const json = JSON.parse(raw);
   const need = {
+    'workbench.colorTheme': 'Default Light+',
     'workbench.editor.enablePreview': false,
     'workbench.editor.enablePreviewFromQuickOpen': false,
     'explorer.autoReveal': true,
   };
   for (const [k, v] of Object.entries(need)) {
     if (json[k] !== v) fail(`VS Code setting ${k} must be ${String(v)}`, failures);
+  }
+}
+
+function countOccurrences(haystack, needle) {
+  if (!needle) return 0;
+  let count = 0;
+  let idx = 0;
+  while (true) {
+    const next = haystack.indexOf(needle, idx);
+    if (next === -1) return count;
+    count += 1;
+    idx = next + needle.length;
+  }
+}
+
+async function checkRulesConsistency(failures) {
+  const rulesPath = path.join(repoRoot, 'RULES.md');
+  const rules = await fs.readFile(rulesPath, 'utf8');
+
+  const uniqueHeaders = ['## QA Status', '## Run Log'];
+  for (const h of uniqueHeaders) {
+    const n = countOccurrences(rules, h);
+    if (n === 0) fail(`RULES.md missing required header: ${h}`, failures);
+    if (n > 1) fail(`RULES.md has duplicate header: ${h}`, failures);
+  }
+
+  const startMarker = '<!--BOOK_INDEX_JSON_START-->';
+  const endMarker = '<!--BOOK_INDEX_JSON_END-->';
+  const startCount = countOccurrences(rules, startMarker);
+  const endCount = countOccurrences(rules, endMarker);
+  if (startCount !== 1 || endCount !== 1) {
+    fail('RULES.md must contain exactly one BOOK_INDEX_JSON_START/END block', failures);
+  } else {
+    const startIdx = rules.indexOf(startMarker) + startMarker.length;
+    const endIdx = rules.indexOf(endMarker, startIdx);
+    const jsonText = rules.slice(startIdx, endIdx).trim();
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonText);
+    } catch {
+      parsed = null;
+    }
+
+    if (!parsed || typeof parsed !== 'object') {
+      fail('RULES.md Book Index JSON is not valid JSON', failures);
+    } else if (!Array.isArray(parsed.topics)) {
+      fail('RULES.md Book Index JSON must have topics[]', failures);
+    } else {
+      for (const topic of parsed.topics) {
+        const pages = Array.isArray(topic?.pages) ? topic.pages : [];
+        for (const page of pages) {
+          const p = String(page?.path ?? '');
+          if (!p.startsWith('/')) {
+            fail(`Book Index page path must start with '/': ${p}`, failures);
+            continue;
+          }
+
+          const relPagePath = p.replace(/^\//, '');
+          const absPagePath = path.join(repoRoot, relPagePath);
+          const stat = await fs.stat(absPagePath).catch(() => null);
+          if (!stat || !stat.isFile()) {
+            fail(`Book Index references missing page file: ${relPagePath}`, failures);
+            continue;
+          }
+
+          const docRel = relPagePath.replace(/\/(pages)\//, '/docs/').replace(/\.html$/i, '.md');
+          const absDoc = path.join(repoRoot, docRel);
+          const docStat = await fs.stat(absDoc).catch(() => null);
+          if (!docStat || !docStat.isFile()) {
+            fail(`Missing doc for indexed page: ${docRel}`, failures);
+          }
+        }
+      }
+    }
+  }
+
+  const promptExists = await pathExists('PROMPT.txt');
+  if (promptExists && !rules.includes('PROMPT.txt')) {
+    fail('RULES.md must reference PROMPT.txt when it exists', failures);
   }
 }
 
@@ -451,6 +531,7 @@ async function main() {
   await checkRulesUpdatedWhenDirty(failures);
   await checkRequiredPaths(failures);
   await checkVsCodeSettings(failures);
+  await checkRulesConsistency(failures);
   await checkNoInlineCss(failures);
   await checkA4PrintCss(failures);
   await checkDavid14pt(failures);
