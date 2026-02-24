@@ -74,6 +74,7 @@
 - A4 utilization
   - Avoid page breaks inside questions (`break-inside: avoid`)
   - No excess padding beyond margins
+  - If intentionally leaving large whitespace (e.g., solution/work area), require `data-whitespace-justification` on the page root.
 - RTL policy
   - Root dir+lang on html
   - `unicode-bidi: plaintext` on html
@@ -139,6 +140,14 @@
 ## QA Status
 - Status: PASS
 - Timestamp: 2026-02-24T14:28:47.372Z
+- Failures:
+(none)
+
+
+
+## QA Status
+- Status: PASS
+- Timestamp: 2026-02-24T14:47:33.981Z
 - Failures:
 (none)
 

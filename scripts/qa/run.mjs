@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import http from 'node:http';
 
 const execFileAsync = promisify(execFile);
 
@@ -59,6 +60,64 @@ async function listFilesRecursive(dir, out = []) {
 function isTextFile(filePath) {
   const ext = path.extname(filePath).toLowerCase();
   return ['.md', '.html', '.css', '.js', '.mjs', '.json'].includes(ext);
+}
+
+function contentType(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  if (ext === '.html') return 'text/html; charset=utf-8';
+  if (ext === '.css') return 'text/css; charset=utf-8';
+  if (ext === '.js' || ext === '.mjs') return 'text/javascript; charset=utf-8';
+  if (ext === '.json') return 'application/json; charset=utf-8';
+  if (ext === '.md') return 'text/markdown; charset=utf-8';
+  if (ext === '.svg') return 'image/svg+xml';
+  if (ext === '.pdf') return 'application/pdf';
+  if (ext === '.png') return 'image/png';
+  if (ext === '.jpg' || ext === '.jpeg') return 'image/jpeg';
+  return 'application/octet-stream';
+}
+
+function safeResolveUrlPath(urlPath) {
+  const normalized = decodeURIComponent(urlPath).replace(/\0/g, '');
+  const clean = normalized.split('?')[0].split('#')[0];
+  const requestPath = clean === '/' ? '/index.html' : clean;
+  const fsPath = path.normalize(path.join(repoRoot, requestPath));
+  if (!fsPath.startsWith(repoRoot)) return null;
+  return fsPath;
+}
+
+async function startStaticServer() {
+  const server = http.createServer(async (req, res) => {
+    try {
+      const fsPath = safeResolveUrlPath(req.url || '/');
+      if (!fsPath) {
+        res.writeHead(400, { 'content-type': 'text/plain; charset=utf-8' });
+        res.end('Bad request');
+        return;
+      }
+
+      const stat = await fs.stat(fsPath).catch(() => null);
+      if (!stat || !stat.isFile()) {
+        res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
+        res.end('Not found');
+        return;
+      }
+
+      const data = await fs.readFile(fsPath);
+      res.writeHead(200, {
+        'content-type': contentType(fsPath),
+        'cache-control': 'no-store',
+      });
+      res.end(data);
+    } catch (err) {
+      res.writeHead(500, { 'content-type': 'text/plain; charset=utf-8' });
+      res.end(String(err?.message ?? err));
+    }
+  });
+
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const addr = server.address();
+  const port = typeof addr === 'object' && addr ? addr.port : 0;
+  return { server, baseUrl: `http://127.0.0.1:${port}/` };
 }
 
 async function readText(filePath) {
@@ -271,6 +330,118 @@ async function checkPageHtmlPolicies(failures) {
   }
 }
 
+async function checkWhitespaceHeuristic(failures) {
+  const topicsDir = path.join(repoRoot, 'topics');
+  const files = await listFilesRecursive(topicsDir).catch(() => []);
+  const pageFiles = files.filter((f) => /\\pages\\page-\d{3}\.html$/i.test(f));
+  if (pageFiles.length === 0) return;
+
+  let chromium;
+  try {
+    ({ chromium } = await import('playwright'));
+  } catch {
+    fail('Playwright is required for whitespace QA. Run npm run setup.', failures);
+    return;
+  }
+
+  const { server, baseUrl } = await startStaticServer();
+  const browser = await chromium
+    .launch({ headless: true })
+    .catch((err) => {
+      fail(
+        `Playwright Chromium not available for whitespace QA. Run npm run setup. (${String(
+          err?.message ?? err,
+        )})`,
+        failures,
+      );
+      return null;
+    });
+
+  if (!browser) {
+    await new Promise((resolve) => server.close(resolve));
+    return;
+  }
+
+  try {
+    const page = await browser.newPage({
+      viewport: { width: 794, height: 1123 },
+      deviceScaleFactor: 1,
+    });
+    await page.emulateMedia({ media: 'print' });
+
+    for (const absPath of pageFiles) {
+      const rel = path.relative(repoRoot, absPath).replace(/\\/g, '/');
+      const url = new URL(rel, baseUrl).toString();
+      await page.goto(url, { waitUntil: 'networkidle' });
+      await page
+        .waitForFunction(() => window.__PAGE_READY__ === true, null, { timeout: 20000 })
+        .catch(() => undefined);
+
+      const result = await page.evaluate(() => {
+        const pageRoot = document.querySelector('[data-page-root]');
+        const header = document.querySelector('[data-page-header]');
+        const body = document.querySelector('[data-page-body]');
+        if (!pageRoot || !header || !body) return { skip: true };
+
+        const rootRect = pageRoot.getBoundingClientRect();
+        const headerRect = header.getBoundingClientRect();
+        const bodyRect = body.getBoundingClientRect();
+        const available = Math.max(1, rootRect.bottom - headerRect.bottom);
+
+        const nodes = Array.from(body.querySelectorAll('*'));
+        const visibles = nodes
+          .map((el) => {
+            const cs = window.getComputedStyle(el);
+            if (cs.display === 'none' || cs.visibility === 'hidden') return null;
+            const r = el.getBoundingClientRect();
+            if (r.width < 2 || r.height < 2) return null;
+            if (r.bottom <= bodyRect.top || r.top >= bodyRect.bottom) return null;
+            return r;
+          })
+          .filter(Boolean);
+
+        let used = 0;
+        if (visibles.length > 0) {
+          const top = Math.min(...visibles.map((r) => r.top));
+          const bottom = Math.max(...visibles.map((r) => r.bottom));
+          used = Math.max(0, bottom - top);
+        }
+
+        const ratio = used / available;
+        const qCount = document.querySelectorAll('.q-item').length;
+        const justified =
+          pageRoot.hasAttribute('data-whitespace-justification') ||
+          body.hasAttribute('data-whitespace-justification');
+
+        return { ratio, qCount, justified };
+      });
+
+      if (result?.skip) continue;
+      const ratio = Number(result?.ratio ?? 1);
+      const qCount = Number(result?.qCount ?? 0);
+      const justified = Boolean(result?.justified);
+
+      if (ratio < 0.2 && !justified) {
+        fail(
+          `Large wasted whitespace suspected (ratio=${ratio.toFixed(
+            2,
+          )}) without data-whitespace-justification: ${rel}`,
+          failures,
+        );
+      }
+
+      if (qCount > 0 && ratio < 0.15 && !justified) {
+        fail(`Very low A4 utilization with questions present: ${rel}`, failures);
+      }
+    }
+
+    await page.close();
+  } finally {
+    await browser.close().catch(() => undefined);
+    await new Promise((resolve) => server.close(resolve));
+  }
+}
+
 async function main() {
   const failures = [];
 
@@ -283,6 +454,7 @@ async function main() {
   await checkForbiddenTokens(failures);
   await checkPageDocPairs(failures);
   await checkPageHtmlPolicies(failures);
+  await checkWhitespaceHeuristic(failures);
 
   const timestamp = nowIso();
   if (failures.length > 0) {
