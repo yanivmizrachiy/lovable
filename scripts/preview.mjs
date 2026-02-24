@@ -53,7 +53,7 @@ async function appendRunLog(line) {
   const entry = `- ${stamp}: ${line}`;
 
   if (rules.includes('## Run Log')) {
-    const updated = rules.replace(/## Run Log\n/m, `## Run Log\n${entry}\n`);
+    const updated = rules.replace(/## Run Log\r?\n/m, (m) => `${m}${entry}\n`);
     await fs.writeFile(rulesPath, updated, 'utf8');
     return;
   }
@@ -122,17 +122,15 @@ server.listen(port, host, async () => {
   console.log(`STOP (PowerShell): Stop-Process -Id ${pid}`);
   console.log(`STOP (cmd): taskkill /PID ${pid} /T /F`);
 
-  await appendRunLog(`preview${isWatchMode ? ' (watch)' : ''} started: ${url} (pid=${pid})`).catch(
-    () => undefined,
-  );
+  const label = isWatchMode ? 'watch' : 'preview';
+  await appendRunLog(`START ${label} pid=${pid} url=${url}`).catch(() => undefined);
 });
 
 async function shutdown(signal) {
   const url = `http://${host}:${port}/index.html`;
   const pid = process.pid;
-  await appendRunLog(
-    `preview${isWatchMode ? ' (watch)' : ''} stopping (${signal}): ${url} (pid=${pid})`,
-  ).catch(() => undefined);
+  const label = isWatchMode ? 'watch' : 'preview';
+  await appendRunLog(`STOP ${label} pid=${pid} url=${url} signal=${signal}`).catch(() => undefined);
 
   await new Promise((resolve) => server.close(resolve));
   process.exit(0);
