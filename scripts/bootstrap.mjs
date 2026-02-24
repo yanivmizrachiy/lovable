@@ -55,7 +55,7 @@ async function updateRulesRuntimeStatus({ status, timestamp, note }) {
 async function main() {
   const ts = nowIso();
   try {
-    await run('npm', ['run', 'setup']);
+    console.log('SKIP setup on android (Termux)');
     await run('npm', ['run', 'qa']);
     await updateRulesRuntimeStatus({ status: 'PASS', timestamp: ts });
   } catch (err) {
