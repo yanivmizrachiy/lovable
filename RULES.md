@@ -113,9 +113,14 @@
 ## One-Time Permissions (Ask-Once Log)
 - (אין עדיין)
 
+## Copilot Chat Prompt
+- `PROMPT.txt` מכיל את פרומפט הממשל (governed) לשימוש ב-Copilot Chat עבור ריפו זה.
+
 ## Run Log
 - 2026-02-24T19:30:41.2514370+02:00 START preview pid=10060 url=http://127.0.0.1:4173/
 - 2026-02-24T19:38:57.4157219+02:00 STOP preview pid=10060 url=http://127.0.0.1:4173/
+- 2026-02-24T19:45:54.7747322+02:00 START watch pid=35696 url=http://127.0.0.1:4173/
+- 2026-02-24T22:14:46.7978428+02:00 STOP watch pid=35696 url=http://127.0.0.1:4173/
 
 ## VS Code UX Lock (Repo-Local)
 - Always light theme for this repo via `.vscode/settings.json` (`workbench.colorTheme`: `Default Light+`).
@@ -197,6 +202,6 @@
 
 ## QA Status
 - Status: PASS
-- Timestamp: 2026-02-24T17:39:24.268Z
+- Timestamp: 2026-02-24T20:28:49.423Z
 - Failures:
 (none)

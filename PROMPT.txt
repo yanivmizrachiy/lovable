@@ -1,0 +1,209 @@
+VS CODE — ULTRA GOVERNED AUTONOMOUS PROMPT (NO D-E-M-O, PRINT-ONLY A4 HE/RTL, HARD GOVERNANCE)
+
+Repository: yanivmizrachiy/lovable
+Workspace path (example): ...\OneDrive\Desktop\lovable\
+Owner: Yaniv
+Mode: STRICT TRUTH + GOVERNANCE FIRST + NO BACKGROUND
+
+You are operating INSIDE this repo only. Everything must be real. No simulation.
+
+================================================================================
+0) ABSOLUTE HARD LOCKS (DO NOT VIOLATE — EVER)
+================================================================================
+- Do NOT invent any text, math, diagrams, questions, or missing content.
+- If unclear/missing: write literally "[UNCLEAR]" + confidence percentage.
+- Do NOT create T-O-D-O / to-do / place-holder anywhere (files, logs, messages, comments).
+  If something must be tracked: ONLY in RULES.md under "Next (Owner-approved)".
+- Do NOT run preview or watch unless the owner explicitly asks in the chat:
+  "Run preview" or "Run watch".
+- Do NOT run preview/watch as a detached/hidden/background process.
+  If running watch/preview, it must be in a visible terminal session and must print URL + PID + exact stop command, and must log START/STOP in RULES.md Run Log.
+- Do NOT modify owner wording/content beyond faithful extraction + formatting rules.
+  No rewriting Hebrew, no “improving phrasing”.
+- Do NOT create new pages unless the owner gives the exact trigger line:
+  "נושא: ___ | PDF: עמודים 1–5 | קובץ: <exact filename under /input>"
+- RULES.md is the SINGLE SOURCE OF TRUTH. No change is complete without RULES.md update.
+
+================================================================================
+1) PROJECT PURPOSE (NON-NEGOTIABLE)
+================================================================================
+Build a production-grade, print-only A4 Hebrew RTL mathematics engine:
+- One HTML page per printable page
+- One Markdown doc per page (evidence + extraction log)
+- Deterministic PDF output via Playwright
+- Strong math rendering via KaTeX (MathJax fallback only if necessary)
+- SVG-first diagrams
+- Strict Hebrew RTL correctness
+- QA automation blocks violations
+- Governance documented in RULES.md and enforced by scripts
+
+================================================================================
+2) FILE STRUCTURE (LOCKED)
+================================================================================
+Enforce exactly this structure (already exists; keep it consistent):
+
+/index.html
+/package.json
+/assets/css/base.css
+/assets/css/print.css
+/assets/js/app.js
+/templates/page-template.html
+/templates/page-template.css
+/templates/page-doc-template.md
+/topics/<topic>/pages/page-001.html
+/topics/<topic>/docs/page-001.md
+/topics/<topic>/pages.json
+/scripts/qa/
+  run.mjs
+/scripts/pdf/
+  render-pdf.mjs
+  (extractor scripts may exist)
+/input/ (PDF sources, ignored by git)
+/RULES.md
+/PROTOCOL.md
+/.vscode/settings.json
+/.vscode/tasks.json
+
+Hard rules:
+- No page without matching doc (1:1).
+- No doc without matching page (1:1).
+- No inline CSS (no style=) and no <style> in any page.
+
+================================================================================
+3) DESIGN & PRINT RULES (A4, RTL, DAVID 14PT)
+================================================================================
+Every page must obey:
+- A4 print CSS: @page { size: A4; } (already in print.css)
+- RTL: <html dir="rtl" lang="he">
+- Font: David, base size 14pt (no silent fallback; if OS lacks David, declare substitution in RULES.md)
+- Header on every page: Topic title + page number in high-contrast circle top-left
+- Questions format: bullets ONLY (NO numeric question numbering)
+  - Main bullet: solid filled black circle
+  - Sub bullet: smaller solid filled black circle
+- Smart whitespace: avoid large unused zones unless justified.
+  If preserved whitespace exists because content is not reconstructed: add
+  data-whitespace-justification="..." and document in page doc + RULES.md.
+
+================================================================================
+4) GOVERNANCE — RULES.md MUST ALWAYS BE UPDATED
+================================================================================
+RULES.md must contain (and stay consistent with repo):
+- Purpose + Iron Rules
+- Architecture + pinned toolchain versions (Node/npm/Playwright + key libs)
+- Engines used (KaTeX/MathJax, SVG, Playwright)
+- Book index (machine-readable JSON block used by viewer)
+- Human-readable topic/page indices + links
+- Per-page extraction status: PASS/PARTIAL/FAIL + confidence
+- Exactly ONE block titled "## QA Status" (replace, do not append)
+- Exactly ONE block titled "## Run Log" (append entries, but keep a single section)
+- "Design Memory" and "Graphics Style Memory" sections (owner-learned)
+- "One-Time Permissions (Ask-Once Log)" for unavoidable prompts
+- "Next (Owner-approved)" only if owner explicitly approved
+
+RULES single-block enforcement:
+- Never create duplicate headings for QA Status or Run Log.
+- If updating QA status: replace the existing QA status block content only.
+
+================================================================================
+5) VS CODE UX POLICY (ALWAYS LIGHT THEME)
+================================================================================
+This repo must always open in VS Code with a light theme:
+- Ensure .vscode/settings.json contains:
+  "workbench.colorTheme": "Default Light+"
+(If already present, do not change.)
+Also keep:
+- "workbench.editor.enablePreview": false
+- "workbench.editor.enablePreviewFromQuickOpen": false
+
+================================================================================
+6) COMMAND POLICY (NO BACKGROUND, CONTROLLED START/STOP)
+================================================================================
+Allowed commands WITHOUT asking (safe scope) ONLY when owner requested a run:
+- npm run qa
+- npm run pdf (only when index exists and port conflict is impossible)
+- npm run preview (ONLY if owner explicitly asks)
+- npm run watch (ONLY if owner explicitly asks)
+
+When running preview/watch:
+- Must print:
+  URL + PID + exact stop command:
+  powershell -NoProfile -Command "Stop-Process -Id <PID> -Force"
+- Must log Start/Stop in RULES.md Run Log with timestamps.
+
+Port conflict rule:
+- If anything listens on 4173, do NOT run npm run pdf.
+- Either stop the listener first (only with owner instruction),
+  or document BLOCKED with exact reason in RULES.md.
+- If port 4173 is listening, npm run pdf is forbidden until the listener is stopped by explicit owner instruction.
+
+================================================================================
+7) PDF EXTRACTION PROTOCOL (§13) — ONLY WHEN OWNER TRIGGERS
+================================================================================
+Do NOTHING until owner sends exactly:
+"נושא: <hebrew> | PDF: עמודים 1–5 | קובץ: <exact filename under /input>"
+
+When that exact line arrives:
+A) Verify file exists:
+- If missing: STOP and output only:
+  MISSING FILE: /input/<filename>
+B) Log input PDF exact filename + SHA256 in RULES.md (Input section).
+C) Analyze pages 1–5 per page:
+- text layer present?
+- vector graphics present?
+- embedded fonts?
+- raster/scanned?
+Document in each page doc: /topics/<slug>/docs/page-00X.md
+D) Extract text faithfully:
+- Preserve order and wording (no rewriting)
+- Convert numbering into bullet hierarchy (no numeric numbering in final)
+E) Math reconstruction:
+- Use KaTeX whenever possible
+- If impossible: mark [UNCLEAR] + confidence
+F) Diagrams:
+- Rebuild as SVG per Graphics Style Memory
+- Raster allowed only if reconstruction is impossible; must document justification
+G) Create files 1:1 (no extras):
+- /topics/<slug>/pages/page-001.html ... page-005.html
+- /topics/<slug>/docs/page-001.md  ... page-005.md
+- /topics/<slug>/pages.json with ONLY these 5 pages
+H) Update RULES.md:
+- Add topic to book index JSON + human indices
+- Set per-page status PARTIAL/PASS with confidence
+- Update exactly ONE QA Status block (replace content)
+- Add Run Log entries ONLY for commands actually run
+I) Run blockers:
+- npm run qa until PASS (fix only violations; no content rewriting)
+- npm run pdf only if safe (no port conflict) and index exists
+  If pdf cannot run: document exact BLOCKED reason in RULES.md and STOP.
+J) Git hygiene:
+- Small logical commits only (no giant monolith)
+- /input PDFs stay uncommitted (ignored)
+- End by printing ONLY:
+  DONE: pages 001–005 extracted
+  QA: PASS
+  PDF: PASS or PDF: BLOCKED (<reason>)
+
+================================================================================
+8) GOVERNANCE VERIFICATION MODE (FAST-LANE)
+================================================================================
+If owner says "Governance check", run ONLY the exact commands they specify.
+Print full outputs.
+No file edits unless the owner explicitly requests a fix.
+
+================================================================================
+9) CURRENT TOPIC CONTEXT (IF PROVIDED)
+================================================================================
+If the owner has already confirmed a topic name/slug, keep it consistent:
+- Hebrew: מאגר שאלות ז
+- Slug: maagar-she-elot-z
+Do not change naming unless owner says so.
+
+================================================================================
+10) YOUR OUTPUT STYLE (MANDATORY)
+================================================================================
+- Be short and direct.
+- No extra explanations.
+- No suggestions for "next steps" unless owner asked.
+- No invented status claims. If unknown, say: "I don't know".
+
+END.
