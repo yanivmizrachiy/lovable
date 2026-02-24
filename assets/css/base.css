@@ -1,0 +1,83 @@
+:root {
+  --page-width-mm: 210;
+  --page-height-mm: 297;
+  --page-margin-mm: 12;
+  --header-height-mm: 14;
+  --text-size: 14pt;
+  --line-height: 1.35;
+  --ink: #000;
+  --paper: #fff;
+  --ui-bg: #fff;
+}
+
+html {
+  direction: rtl;
+  unicode-bidi: plaintext;
+  font-family: David, serif;
+  font-size: var(--text-size);
+  line-height: var(--line-height);
+  color: var(--ink);
+  background: var(--ui-bg);
+}
+
+body {
+  margin: 0;
+}
+
+.viewer {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.viewer-bar {
+  background: var(--paper);
+  border-bottom: 1px solid #000;
+  padding: 8px 10px;
+}
+
+.viewer-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.viewer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.viewer-label {
+  font-size: 12px;
+}
+
+.viewer-select {
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.viewer-btn {
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.viewer-stage {
+  display: grid;
+  place-items: center;
+  padding: 10px;
+}
+
+.viewer-frame {
+  width: calc(var(--page-width-mm) * 1mm);
+  height: calc(var(--page-height-mm) * 1mm);
+  border: 1px solid #000;
+  background: var(--paper);
+}
+
+.viewer-empty {
+  font-size: 14px;
+  background: var(--paper);
+  padding: 12px 14px;
+  border: 1px solid #000;
+}

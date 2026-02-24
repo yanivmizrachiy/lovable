@@ -1,0 +1,9 @@
+{
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.enablePreviewFromQuickOpen": false,
+  "explorer.autoReveal": true,
+  "workbench.list.smoothScrolling": true,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 800,
+  "terminal.integrated.scrollback": 10000
+}

@@ -1,0 +1,98 @@
+{
+  "name": "lovable",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A4 Hebrew RTL print-only textbook engine",
+  "engines": {
+    "node": "20.19.0",
+    "npm": "11.6.0"
+  },
+  "volta": {
+    "node": "20.19.0",
+    "npm": "11.6.0"
+  },
+  "scripts": {
+    "setup": "npm ci && npx playwright install chromium",
+    "bootstrap": "node ./scripts/bootstrap.mjs",
+    "preview": "node ./scripts/preview.mjs",
+    "watch": "node ./scripts/preview.mjs --watch",
+    "qa": "node ./scripts/qa/run.mjs",
+    "pdf": "node ./scripts/pdf/render-pdf.mjs",
+    "lint": "npm run lint:js && npm run lint:css && npm run format:check",
+    "lint:js": "eslint .",
+    "lint:css": "stylelint \"**/*.css\"",
+    "format:check": "prettier -c .",
+    "format:write": "prettier -w ."
+  },
+  "dependencies": {
+    "chokidar": "3.6.0",
+    "katex": "0.16.10",
+    "pdf-lib": "1.17.1",
+    "playwright": "1.41.2"
+  },
+  "devDependencies": {
+    "eslint": "8.56.0",
+    "prettier": "3.2.5",
+    "stylelint": "15.11.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "browser": true,
+      "node": true,
+      "es2022": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2022,
+      "sourceType": "module"
+    },
+    "ignorePatterns": [
+      "dist/",
+      "node_modules/"
+    ],
+    "rules": {
+      "no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_",
+          "varsIgnorePattern": "^_"
+        }
+      ]
+    }
+  },
+  "stylelint": {
+    "ignoreFiles": [
+      "dist/**",
+      "node_modules/**"
+    ],
+    "rules": {
+      "block-no-empty": true,
+      "color-no-invalid-hex": true,
+      "declaration-block-no-duplicate-properties": true,
+      "declaration-block-no-shorthand-property-overrides": true,
+      "font-family-no-duplicate-names": true,
+      "function-calc-no-unspaced-operator": true,
+      "function-linear-gradient-no-nonstandard-direction": true,
+      "keyframe-declaration-no-important": true,
+      "media-feature-name-no-unknown": true,
+      "no-descending-specificity": null,
+      "no-duplicate-selectors": true,
+      "property-no-unknown": true,
+      "selector-pseudo-class-no-unknown": true,
+      "selector-pseudo-element-no-unknown": true,
+      "string-no-newline": true,
+      "unit-no-unknown": true
+    }
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "semi": true,
+    "trailingComma": "all",
+    "endOfLine": "lf"
+  }
+}

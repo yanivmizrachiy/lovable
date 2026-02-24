@@ -1,0 +1,89 @@
+html {
+  background: var(--ui-bg);
+}
+
+body {
+  margin: 0;
+}
+
+.page {
+  width: calc(var(--page-width-mm) * 1mm);
+  min-height: calc(var(--page-height-mm) * 1mm);
+  background: var(--paper);
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: calc(var(--page-margin-mm) * 1mm);
+}
+
+.page-header {
+  position: relative;
+  height: calc(var(--header-height-mm) * 1mm);
+  padding-left: 28mm;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.page-topic {
+  font-size: 16pt;
+  margin: 0;
+  font-weight: 700;
+}
+
+.page-number {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 10mm;
+  height: 10mm;
+  border: 1.2px solid #000;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  background: #fff;
+}
+
+.page-body {
+  margin-top: 2mm;
+}
+
+.q-list,
+.subq-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.q-item {
+  position: relative;
+  padding-right: 6.2mm;
+  margin: 0 0 4.2mm 0;
+  break-inside: avoid;
+}
+
+.q-item::before {
+  content: '●';
+  position: absolute;
+  right: 0;
+  top: 0.1em;
+  font-size: 1em;
+  line-height: 1;
+}
+
+.subq-item {
+  position: relative;
+  padding-right: 5.2mm;
+  margin: 0 0 2.6mm 0;
+  break-inside: avoid;
+}
+
+.subq-item::before {
+  content: '●';
+  position: absolute;
+  right: 0;
+  top: 0.2em;
+  font-size: 0.78em;
+  line-height: 1;
+}

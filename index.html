@@ -1,0 +1,34 @@
+<!doctype html>
+<html dir="rtl" lang="he">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>מנוע ספר לימוד (A4)</title>
+    <link rel="stylesheet" href="/assets/css/base.css" />
+    <link rel="stylesheet" href="/assets/css/print.css" media="print" />
+  </head>
+  <body data-role="viewer">
+    <main class="viewer" id="viewerRoot">
+      <header class="viewer-bar" data-viewer-bar>
+        <div class="viewer-title">תצוגת ספר (A4)</div>
+        <div class="viewer-controls">
+          <label class="viewer-label" for="topicSelect">נושא</label>
+          <select class="viewer-select" id="topicSelect" data-topic-select></select>
+
+          <label class="viewer-label" for="pageSelect">עמוד</label>
+          <select class="viewer-select" id="pageSelect" data-page-select></select>
+
+          <button class="viewer-btn" type="button" data-prev>הקודם</button>
+          <button class="viewer-btn" type="button" data-next>הבא</button>
+        </div>
+      </header>
+
+      <section class="viewer-stage" aria-label="תצוגת עמוד">
+        <div class="viewer-empty" data-empty hidden>אין עמודים זמינים כרגע.</div>
+        <iframe class="viewer-frame" data-frame title="עמוד"></iframe>
+      </section>
+    </main>
+
+    <script src="/assets/js/app.js" defer></script>
+  </body>
+</html>

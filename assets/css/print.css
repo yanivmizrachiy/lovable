@@ -1,0 +1,17 @@
+@page {
+  size: A4;
+  margin: 12mm;
+}
+
+html {
+  background: #fff;
+}
+
+body {
+  background: #fff;
+}
+
+.viewer-bar,
+.viewer-stage {
+  display: none;
+}

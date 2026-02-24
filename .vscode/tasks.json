@@ -1,0 +1,43 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Bootstrap",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "bootstrap"],
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Preview",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "preview"],
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Watch",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "watch"],
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "QA",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "qa"],
+      "problemMatcher": []
+    },
+    {
+      "label": "PDF",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "pdf"],
+      "problemMatcher": []
+    }
+  ]
+}
