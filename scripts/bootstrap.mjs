@@ -66,8 +66,6 @@ async function main() {
     }).catch(() => undefined);
     throw err;
   }
-
-  await run('npm', ['run', 'preview']);
 }
 
 main().catch((err) => {

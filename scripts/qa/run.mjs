@@ -157,10 +157,13 @@ async function updateRulesQaStatus({ status, timestamp, failures }) {
     `- Failures:\n${failuresText}\n`;
 
   let updated = rules;
-  if (/## QA Status\n[\s\S]*?(?=\n## |\n$)/m.test(updated)) {
-    updated = updated.replace(/## QA Status\n[\s\S]*?(?=\n## |\n$)/m, nextBlock);
+  const qaHeaderIdx = updated.indexOf('## QA Status');
+  if (qaHeaderIdx !== -1) {
+    const nextHeaderIdx = updated.indexOf('\n## ', qaHeaderIdx + 1);
+    const endIdx = nextHeaderIdx === -1 ? updated.length : nextHeaderIdx + 1;
+    updated = updated.slice(0, qaHeaderIdx) + nextBlock + updated.slice(endIdx);
   } else {
-    updated += `\n\n${nextBlock}\n`;
+    updated = `${updated.trimEnd()}\n\n${nextBlock}\n`;
   }
 
   await fs.writeFile(rulesPath, updated, 'utf8');

@@ -2,7 +2,6 @@ import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { spawn } from 'node:child_process';
 import chokidar from 'chokidar';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
@@ -47,17 +46,20 @@ function contentType(filePath) {
   return 'application/octet-stream';
 }
 
-function openUrl(url) {
-  const platform = process.platform;
-  if (platform === 'win32') {
-    spawn('cmd', ['/c', 'start', '', url], { stdio: 'ignore', shell: false });
+async function appendRunLog(line) {
+  const rulesPath = path.join(repoRoot, 'RULES.md');
+  const rules = await fs.readFile(rulesPath, 'utf8');
+  const stamp = new Date().toISOString();
+  const entry = `- ${stamp}: ${line}`;
+
+  if (rules.includes('## Run Log')) {
+    const updated = rules.replace(/## Run Log\n/m, `## Run Log\n${entry}\n`);
+    await fs.writeFile(rulesPath, updated, 'utf8');
     return;
   }
-  if (platform === 'darwin') {
-    spawn('open', [url], { stdio: 'ignore' });
-    return;
-  }
-  spawn('xdg-open', [url], { stdio: 'ignore' });
+
+  const updated = `${rules.trimEnd()}\n\n## Run Log\n${entry}\n`;
+  await fs.writeFile(rulesPath, updated, 'utf8');
 }
 
 function safeResolveUrlPath(urlPath) {
@@ -111,10 +113,37 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(port, host, () => {
+server.listen(port, host, async () => {
   const url = `http://${host}:${port}/index.html`;
+  const pid = process.pid;
+
   console.log(url);
-  openUrl(url);
+  console.log(`STOP (Ctrl+C) in this terminal`);
+  console.log(`STOP (PowerShell): Stop-Process -Id ${pid}`);
+  console.log(`STOP (cmd): taskkill /PID ${pid} /T /F`);
+
+  await appendRunLog(`preview${isWatchMode ? ' (watch)' : ''} started: ${url} (pid=${pid})`).catch(
+    () => undefined,
+  );
+});
+
+async function shutdown(signal) {
+  const url = `http://${host}:${port}/index.html`;
+  const pid = process.pid;
+  await appendRunLog(
+    `preview${isWatchMode ? ' (watch)' : ''} stopping (${signal}): ${url} (pid=${pid})`,
+  ).catch(() => undefined);
+
+  await new Promise((resolve) => server.close(resolve));
+  process.exit(0);
+}
+
+process.on('SIGINT', () => {
+  void shutdown('SIGINT');
+});
+
+process.on('SIGTERM', () => {
+  void shutdown('SIGTERM');
 });
 
 async function runQaOnce() {

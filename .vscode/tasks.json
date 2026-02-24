@@ -6,7 +6,7 @@
       "type": "shell",
       "command": "npm",
       "args": ["run", "bootstrap"],
-      "isBackground": true,
+      "isBackground": false,
       "problemMatcher": []
     },
     {
@@ -14,7 +14,7 @@
       "type": "shell",
       "command": "npm",
       "args": ["run", "preview"],
-      "isBackground": true,
+      "isBackground": false,
       "problemMatcher": []
     },
     {
@@ -22,7 +22,7 @@
       "type": "shell",
       "command": "npm",
       "args": ["run", "watch"],
-      "isBackground": true,
+      "isBackground": false,
       "problemMatcher": []
     },
     {
