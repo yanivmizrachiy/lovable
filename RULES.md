@@ -198,11 +198,13 @@
 - In-Progress: None
 
 ## Change Log
+- 2026-02-24T22:18:48.820Z: bootstrap run (FAIL) — npm run setup exited with code 1.
+- 2026-02-24T22:18:15.912Z: bootstrap run (FAIL) — npm run setup exited with code 1.
 - 2026-02-24: נוספו watch/bootstrap, SSE לרענון תצוגה (best effort), והוגדר `.gitignore`.
 - 2026-02-24: Bootstrap ראשוני של המנוע, תבניות, CSS A4/RTL, viewer, QA, ותשתית PDF.
 
 ## QA Status
 - Status: PASS
-- Timestamp: 2026-02-24T22:16:04.310Z
+- Timestamp: 2026-02-24T22:19:55.715Z
 - Failures:
 (none)
