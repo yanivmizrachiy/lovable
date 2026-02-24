@@ -1,0 +1,36 @@
+{
+  "id": "maagar-she-elot-z",
+  "title": "מאגר שאלות ז",
+  "pages": [
+    {
+      "id": "page-001",
+      "label": "עמוד 1",
+      "path": "/topics/maagar-she-elot-z/pages/page-001.html",
+      "doc": "/topics/maagar-she-elot-z/docs/page-001.md"
+    },
+    {
+      "id": "page-002",
+      "label": "עמוד 2",
+      "path": "/topics/maagar-she-elot-z/pages/page-002.html",
+      "doc": "/topics/maagar-she-elot-z/docs/page-002.md"
+    },
+    {
+      "id": "page-003",
+      "label": "עמוד 3",
+      "path": "/topics/maagar-she-elot-z/pages/page-003.html",
+      "doc": "/topics/maagar-she-elot-z/docs/page-003.md"
+    },
+    {
+      "id": "page-004",
+      "label": "עמוד 4",
+      "path": "/topics/maagar-she-elot-z/pages/page-004.html",
+      "doc": "/topics/maagar-she-elot-z/docs/page-004.md"
+    },
+    {
+      "id": "page-005",
+      "label": "עמוד 5",
+      "path": "/topics/maagar-she-elot-z/pages/page-005.html",
+      "doc": "/topics/maagar-she-elot-z/docs/page-005.md"
+    }
+  ]
+}

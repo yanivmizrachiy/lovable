@@ -61,6 +61,11 @@
 - /input/ נשמרת בריפו עם `.gitkeep`.
 - קבצי PDF בתוך `/input` אינם מנוהלים ב-git (מוגדרים ב-`.gitignore`) כדי למנוע רעש ב-commit.
 
+### Registered Inputs
+- `input/עותק של המאגר.pdf`
+  - SHA256: `CC71ABCD9561A215BE3C281963C5013FEA0733DCB7899E6FB81C401214835C47`
+  - Note: קובץ זה אינו מנוהל ב-git לפי `.gitignore`.
+
 ## Design Memory (Owner-Learned, Canonical)
 - Typography
   - Base font: David
@@ -120,21 +125,63 @@
 ## Book Index (Machine-Readable)
 <!--BOOK_INDEX_JSON_START-->
 {
-  "topics": []
+  "topics": [
+    {
+      "id": "maagar-she-elot-z",
+      "title": "מאגר שאלות ז",
+      "pages": [
+        {
+          "id": "page-001",
+          "label": "עמוד 1",
+          "path": "/topics/maagar-she-elot-z/pages/page-001.html"
+        },
+        {
+          "id": "page-002",
+          "label": "עמוד 2",
+          "path": "/topics/maagar-she-elot-z/pages/page-002.html"
+        },
+        {
+          "id": "page-003",
+          "label": "עמוד 3",
+          "path": "/topics/maagar-she-elot-z/pages/page-003.html"
+        },
+        {
+          "id": "page-004",
+          "label": "עמוד 4",
+          "path": "/topics/maagar-she-elot-z/pages/page-004.html"
+        },
+        {
+          "id": "page-005",
+          "label": "עמוד 5",
+          "path": "/topics/maagar-she-elot-z/pages/page-005.html"
+        }
+      ]
+    }
+  ]
 }
 <!--BOOK_INDEX_JSON_END-->
 
 ## Topic Index (Human)
-- (אין נושאים מוגדרים עדיין)
+- מאגר שאלות ז (`maagar-she-elot-z`)
 
 ## Page Index Per Topic
-- (אין)
+- מאגר שאלות ז (`maagar-she-elot-z`)
+  - עמוד 001: `topics/maagar-she-elot-z/pages/page-001.html` | Doc: `topics/maagar-she-elot-z/docs/page-001.md`
+  - עמוד 002: `topics/maagar-she-elot-z/pages/page-002.html` | Doc: `topics/maagar-she-elot-z/docs/page-002.md`
+  - עמוד 003: `topics/maagar-she-elot-z/pages/page-003.html` | Doc: `topics/maagar-she-elot-z/docs/page-003.md`
+  - עמוד 004: `topics/maagar-she-elot-z/pages/page-004.html` | Doc: `topics/maagar-she-elot-z/docs/page-004.md`
+  - עמוד 005: `topics/maagar-she-elot-z/pages/page-005.html` | Doc: `topics/maagar-she-elot-z/docs/page-005.md`
 
 ## Per-Page Status
-- (אין עמודים בריפו בשלב זה)
+- `maagar-she-elot-z/page-001`: PARTIAL (extract=0.60, rtl=0.50, math=0.55, graphics=0.55)
+- `maagar-she-elot-z/page-002`: PARTIAL (extract=0.60, rtl=0.50, math=0.55, graphics=0.55)
+- `maagar-she-elot-z/page-003`: PARTIAL (extract=0.72, rtl=0.50, math=0.55, graphics=0.55)
+- `maagar-she-elot-z/page-004`: PARTIAL (extract=0.60, rtl=0.50, math=0.55, graphics=0.55)
+- `maagar-she-elot-z/page-005`: PARTIAL (extract=0.60, rtl=0.50, math=0.55, graphics=0.55)
 
 ## Completed / In-Progress
 - Completed: Bootstrap toolchain + templates + QA baseline
+- Completed: "מאגר שאלות ז" pages 001–005 extracted (PARTIAL) and rendered to PDF
 - In-Progress: None
 
 ## Change Log
