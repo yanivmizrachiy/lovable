@@ -25,6 +25,7 @@
 - KaTeX: 0.16.10
 - Playwright: 1.41.2 (Chromium)
 - pdf-lib: 1.17.1
+- pdfjs-dist: 5.4.624 (PDF text/structure extraction)
 - chokidar: 3.6.0 (watch mode)
 
 ### Scripts
@@ -142,6 +143,6 @@
 
 ## QA Status
 - Status: PASS
-- Timestamp: 2026-02-24T15:20:30.802Z
+- Timestamp: 2026-02-24T16:39:24.611Z
 - Failures:
 (none)
