@@ -16,6 +16,8 @@
 - PDF: הפקה דטרמיניסטית עם Playwright (Chromium) ו-Print CSS.
 - QA חוסם: `npm run qa` נכשל על כל הפרה.
 - כל סט שינוי נחשב שלם רק אם RULES.md עודכן באותו סט שינוי.
+- אין יצירת רשימות משימות/TO-DOs אוטומטיות בשום כלי. “Next” נכתב רק ב-RULES.md ורק אחרי אישור בעלים מפורש.
+- אין הרצה “ברקע” בלי שליטת בעלים. Preview/Watch מותר להריץ רק כאשר מוצג URL + הוראת עצירה מדויקת, ונרשם Run Log.
 
 ## Architecture & Toolchain (Pinned)
 - Node: 20.19.0
@@ -27,8 +29,8 @@
 
 ### Scripts
 - `npm run setup`: התקנת תלותים + התקנת Chromium של Playwright.
-- `npm run bootstrap`: כניסה אחת שמריצה setup → qa, מעדכנת RULES.md, ומריצה preview.
-- `npm run preview`: שרת מקומי ופתיחת viewer.
+- `npm run bootstrap`: כניסה אחת שמריצה setup → qa, ומעדכנת RULES.md.
+- `npm run preview`: שרת מקומי שמדפיס URL + הוראות עצירה, ורושם Run Log.
 - `npm run watch`: כמו preview, ובנוסף Watch על שינויים → QA → רענון תצוגה (best effort).
 - `npm run qa`: בדיקות חוסמות.
 - `npm run pdf`: הפקת PDF לפי אינדקס הספר.
@@ -53,6 +55,10 @@
 - /PROTOCOL.md
 - /.vscode/settings.json
 - /.vscode/tasks.json
+
+תיקיית קלט (מקורות בעלים):
+- /input/ נשמרת בריפו עם `.gitkeep`.
+- קבצי PDF בתוך `/input` אינם מנוהלים ב-git (מוגדרים ב-`.gitignore`) כדי למנוע רעש ב-commit.
 
 ## Design Memory (Owner-Learned, Canonical)
 - Typography
@@ -101,6 +107,9 @@
 ## One-Time Permissions (Ask-Once Log)
 - (אין עדיין)
 
+## Run Log
+- (יתעדכן רק בעת הרצת Preview/Watch)
+
 ## VS Code UX Lock (Repo-Local)
 - Preview tab replacement disabled via `.vscode/settings.json`.
 - Autosave: afterDelay (800ms).
@@ -123,11 +132,6 @@
 ## Per-Page Status
 - (אין עמודים בריפו בשלב זה)
 
-## QA Status
-- Status: PASS
-- Timestamp: 2026-02-24T00:00:00Z
-- Failures: (none)
-
 ## Completed / In-Progress
 - Completed: Bootstrap toolchain + templates + QA baseline
 - In-Progress: None
@@ -136,18 +140,8 @@
 - 2026-02-24: נוספו watch/bootstrap, SSE לרענון תצוגה (best effort), והוגדר `.gitignore`.
 - 2026-02-24: Bootstrap ראשוני של המנוע, תבניות, CSS A4/RTL, viewer, QA, ותשתית PDF.
 
-
 ## QA Status
 - Status: PASS
-- Timestamp: 2026-02-24T14:28:47.372Z
+- Timestamp: 2026-02-24T15:20:30.802Z
 - Failures:
 (none)
-
-
-
-## QA Status
-- Status: PASS
-- Timestamp: 2026-02-24T14:47:33.981Z
-- Failures:
-(none)
-
