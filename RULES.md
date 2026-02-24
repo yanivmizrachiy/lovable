@@ -31,8 +31,8 @@
 ### Scripts
 - `npm run setup`: התקנת תלותים + התקנת Chromium של Playwright.
 - `npm run bootstrap`: כניסה אחת שמריצה setup → qa, ומעדכנת RULES.md.
-- `npm run preview`: שרת מקומי שמדפיס URL + הוראות עצירה, ורושם Run Log.
-- `npm run watch`: כמו preview, ובנוסף Watch על שינויים → QA → רענון תצוגה (best effort).
+- `npm run preview`: שרת מקומי שמדפיס URL + הוראות עצירה, ורושם Run Log. (ללא עדכון אוטומטי)
+- `npm run watch`: תצוגה מקדימה קבועה עם עדכון אוטומטי: Watch על שינויים → QA → רענון תצוגה דרך SSE (best effort). רענון נשלח רק אחרי QA PASS; אם QA נכשל אין רענון.
 - `npm run qa`: בדיקות חוסמות.
 - `npm run pdf`: הפקת PDF לפי אינדקס הספר.
 - `npm run lint`: ESLint + Stylelint + Prettier check.
@@ -114,13 +114,20 @@
 - (אין עדיין)
 
 ## Run Log
-- (יתעדכן רק בעת הרצת Preview/Watch)
+- 2026-02-24T19:30:41.2514370+02:00 START preview pid=10060 url=http://127.0.0.1:4173/
+- 2026-02-24T19:38:57.4157219+02:00 STOP preview pid=10060 url=http://127.0.0.1:4173/
 
 ## VS Code UX Lock (Repo-Local)
+- Always light theme for this repo via `.vscode/settings.json` (`workbench.colorTheme`: `Default Light+`).
 - Preview tab replacement disabled via `.vscode/settings.json`.
 - Autosave: afterDelay (800ms).
 - Smooth list scrolling enabled.
 - Terminal scrollback: 10000.
+
+### Preview Policy (Repo-Local)
+- תצוגה מקדימה קבועה ומתעדכנת אוטומטית נעשית רק עם `npm run watch`.
+- פותחים את ה-URL המודפס בתוך VS Code דרך Simple Browser כדי להישאר “כאן בחלון הפנימי”.
+- עצירה נעשית רק בצורה מבוקרת לפי ההוראות שהשרת מדפיס (Ctrl+C באותו טרמינל, או Stop-Process לפי PID).
 
 ## Book Index (Machine-Readable)
 <!--BOOK_INDEX_JSON_START-->
@@ -190,6 +197,6 @@
 
 ## QA Status
 - Status: PASS
-- Timestamp: 2026-02-24T16:47:55.861Z
+- Timestamp: 2026-02-24T17:39:24.268Z
 - Failures:
 (none)
