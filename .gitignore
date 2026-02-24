@@ -7,3 +7,6 @@ Thumbs.db
 .vscode-test/
 playwright-report/
 test-results/
+
+# local backups
+RULES.backup.*.md
